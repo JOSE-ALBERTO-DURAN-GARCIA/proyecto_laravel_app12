@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Persona;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PersonaController extends Controller
@@ -16,7 +17,8 @@ class PersonaController extends Controller
         //esto es eloquent o ORM 
         //estamos trabajando con puro eloquent
         $personas = Persona::get();//y estan bien se puede hacer con select * from personas
-        return view("admin.persona.listar",["personas" => $personas]);
+        $usuarios = User::get();
+        return view("admin.persona.listar",["personas" => $personas, "usuarios"=>$usuarios]);
                                              //esta enviando estos datos a la vista "admin.persona.listar"
     }
     public function funCrear(){
@@ -58,6 +60,13 @@ class PersonaController extends Controller
          
       $persona= Persona::find($id);
       $persona->delete();
+      return redirect("/persona");
+    }
+
+    public function asignarPersona($id, Request $request){
+      $persona = Persona::find($id);
+      $persona->user_id= $request->user_id;
+      $persona->update();
       return redirect("/persona");
     }
 }

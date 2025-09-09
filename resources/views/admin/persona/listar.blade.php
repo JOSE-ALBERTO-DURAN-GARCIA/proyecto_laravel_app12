@@ -11,28 +11,49 @@
             <th>APELLIDOS</th>
             <th>FECHA NACIMIENTO</th>
             <th>CI</th>
+            <th>CUENTA USUARIO</th>
             <th>ACCIONES</th>
         </tr>
     </thead>
     <tbody>
         {{-- se lo conoce como estructura de funcion blade --}}
         @foreach ($personas as $per)
-        <tr>
-            <td>{{$per->id}}</td>
-            <td>{{$per->nombres}}</td>
-            <td>{{$per->apellidos}}</td>
-            <td>{{$per->fecha_nac}}</td>
-            <td>{{$per->ci}}</td>
-            <td>
-                <a href="/persona/{{ $per->id }}"> editar </a>
-                <form action="/persona/{{ $per->id}}" method="POST">
-                   @csrf
-                   @method("DELETE")
-                   <input type="submit" value="eliminar">
-                </form>
-            </td>
-        </tr>
-            
+            <tr>
+                <td>{{ $per->id }}</td>
+                <td>{{ $per->nombres }}</td>
+                <td>{{ $per->apellidos }}</td>
+                <td>{{ $per->fecha_nac }}</td>
+                <td>{{ $per->ci }}</td>
+                <td>
+                     @if($per->user_id == null) {{--si la persona es nulo --}}
+                        <form action="/persona/{{ $per->id }}/asignar" method="POST">
+                            @csrf
+                            <select name="user_id" id="">
+                                {{ $usuarios }}
+                                <option value="">Seleccione Usuario</option>
+                                @foreach($usuarios as $user)
+                                    <option value="{{ $user->id }}">{{ $user->email }}</option>
+                                @endforeach
+                            </select>
+                            <button type="submit">Asignar Cuenta</button>
+
+                        </form>
+                    @else
+                        <div>
+                             <h5>NOMBRE: {{ $per->user->name }}</h5> 
+                            <h5>CORREO:{{ $per->user->email }}</h5>
+                        </div>
+                    @endif
+                </td>
+                <td>
+                    <a href="/persona/{{ $per->id }}"> editar </a>
+                    <form action="/persona/{{ $per->id }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <input type="submit" value="eliminar">
+                    </form>
+                </td>
+            </tr>
         @endforeach
     </tbody>
 </table>
@@ -44,23 +65,23 @@
 </div>
 
 <script>
-    function obtenerPersonas(){
+    function obtenerPersonas() {
         fetch('/persona_ajax')
-           .then(response => response.json())
-           .then(json => {
+            .then(response => response.json())
+            .then(json => {
 
-             var body = '';
-             json.forEach(persona => {
-                body = body + `<tr>
+                var body = '';
+                json.forEach(persona => {
+                    body = body + `<tr>
             <td>${persona.id}</td>
             <td>${persona.nombres}</td>
             <td>${persona.apellidos}</td>
             <td>${persona.fecha_nac}</td>
             <td>${persona.ci}</td>
             <tr>`;
-             });
+                });
 
-             let table = `<table border="1">
+                let table = `<table border="1">
     <thead>
         <tr>
             <th>ID</th>
@@ -77,7 +98,7 @@
 
     </table>
     `;
-           document.getElementById("tabla_ajax").innerHTML = table;
-           })
+                document.getElementById("tabla_ajax").innerHTML = table;
+            })
     }
 </script>
