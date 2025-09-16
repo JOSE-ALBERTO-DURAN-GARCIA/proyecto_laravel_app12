@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('clientes', function (Blueprint $table) {
             $table->string("imagen")->nullable()->after("direccion");
         });
+    
     }
 
     /**
